@@ -1,4 +1,4 @@
-#property version "1.0"
+#property version "1.1"
 #property copyright "Copyright ? 2015, Quantrade Corp."
 #property link      "http: //www.talaikis.com"
 
@@ -18,7 +18,7 @@
 
 extern int    per     = 21;
 extern int    lag     = 1;
-extern string symbol1 = "S&P500";
+string symbol1 = Symbol();
 
 double X[];
 double Y[];
@@ -115,7 +115,7 @@ double SUM(double array[], int per, int bar)
 {
     double Sum = 0;
 
-    for (int i = per; i >= 0; i--)
+    for (int i = per-1; i >= 0; i--)
     {
         Sum += array[i + bar];
     }
