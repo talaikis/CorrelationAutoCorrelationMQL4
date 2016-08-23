@@ -1,4 +1,4 @@
-#property version "1.0"
+#property version "1.1"
 #property copyright "Copyright ? 2015, Quantrade Corp."
 #property link      "http: //www.talaikis.com"
 
@@ -16,9 +16,9 @@
 #property indicator_levelcolor clrSilver
 #property indicator_levelstyle STYLE_DOT
 
-extern int    per     = 21;
-extern string symbol1 = "S&P500";
-extern string symbol2 = "DAX30";
+extern int    per     = 200;
+extern string information = "DAX30";
+extern int lag = 0;
 
 double X[];
 double Y[];
@@ -72,18 +72,25 @@ int start()
         //---------------------- DATA
         for (i = bars; i >= 0; i--)
         {
-            if (iClose(symbol1, 0, i + 1) != 0)
+            //int shift1 = iBarShift(symbol1, 0, iTime(symbol1, 0, i), true);
+            //int shift11 = iBarShift(symbol1, 0, iTime(symbol1, 0, i+1), true);
+            
+            //if (iClose(symbol1, 0, shift11) != 0)
+            if (Close[i+1] != 0)
             {
-                X[i] = (iClose(symbol1, 0, i) - iClose(symbol1, 0, i + 1)) / iClose(symbol1, 0, i + 1);
+                X[i] = (Close[i] - Close[i+1]) / Close[i+1];
             }
 
-            if (iClose(symbol2, 0, i + 1) != 0)
+            int shift2 = iBarShift(information, 0, iTime(information, 0, i+lag), true);
+            int shift21 = iBarShift(information, 0, iTime(information, 0, i+1+lag), true);
+            
+            if (iClose(information, 0, shift21) != 0)
             {
-                Y[i] = (iClose(symbol2, 0, i) - iClose(symbol2, 0, i + 1)) / iClose(symbol2, 0, i + 1);
+                Y[i] = (iClose(information, 0, shift2) - iClose(information, 0, shift21)) / iClose(information, 0, shift21);
             }
         }
 
-        //---------------------- <a href="http://www.talaikis.com/correlation/">CORRELATION</a>
+        //---------------------- CORRELATION
         for (i = bars; i >= 0; i--)
         {
             xy[i]  = X[i] * Y[i];
@@ -115,7 +122,7 @@ double SUM(double array[], int per, int bar)
 {
     double Sum = 0;
 
-    for (int i = per; i >= 0; i--)
+    for (int i = per-1; i >= 0; i--)
     {
         Sum += array[i + bar];
     }
